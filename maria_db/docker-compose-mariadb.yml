@@ -1,0 +1,34 @@
+version: "3.3"
+
+services:
+  db_master:
+    image: mariadb:10.6 # mariadb 10.6 버전 이미지 사용
+    container_name: db_master # container 이름 설정
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: jake@00 # container 생성 후 root의 비밀번호를 저장한 파일을 설정함으로서 root 비밀번호를 설정
+      MARIADB_DATABASE: my_database
+      MARIADB_USER: jake
+      MARIADB_PASSWORD: jake#00
+    volumes:
+      - ./master_db/data:/var/lib/mysql
+      - ./master_db/config/:/etc/mysql/conf.d
+    ports:
+      - "3306:3306"
+
+  db_slave:
+    image: mariadb:10.6 # mariadb 10.6 버전 이미지 사용
+    container_name: db_slave # container 이름 설정
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: jake@00
+      MARIADB_DATABASE: my_database
+      MARIADB_USER: jake
+      MARIADB_PASSWORD: jake#00
+    volumes:
+      - ./slave_db/data:/var/lib/mysql
+      - ./slave_db/config/:/etc/mysql/conf.d
+    ports:
+      - "3307:3306"
+    depends_on:
+      - db_master
